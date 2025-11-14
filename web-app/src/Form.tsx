@@ -4,14 +4,10 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { InputTextarea } from 'primereact/inputtextarea';
+import type { SubmitSmResult } from "./model/SubmitSmResp";
 
-async function fetchGreeting() {
-  const response = await fetch("http://localhost:8080/greeting");
-  const greeting = await response.json();
-  return greeting;
-}
 
-async function submitSM(msg: string) {
+async function submitSMAApi(msg: string) {
   const data = {
     message: msg,
   };
@@ -30,11 +26,14 @@ async function submitSM(msg: string) {
 const Form: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [submmitSMResp, setSubmmitSMResp] = useState<SubmitSmResult | null>(null);
 
   function submmitSM() {
     setLoading(true);
-    submitSM(message).then(() => {
+    submitSMAApi(message).then((submmitSMResp) => {
       setLoading(false);
+      setSubmmitSMResp(submmitSMResp);
+      console.log("Submit successful:", JSON.stringify(submmitSMResp));
     })    .catch((err) => {
       console.error("Submit failed:", err);
       setLoading(false); 
@@ -68,3 +67,4 @@ const Form: React.FC = () => {
 export default Form;
 
 
+docker run -d --name activemq -p 61616:61616 -p 8161:8161 -p 61613:61613 apache/activemq-classic:6.1.8

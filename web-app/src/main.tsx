@@ -9,11 +9,12 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 import './index.css';
 import './flags.css';
+import Chat from './chat.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PrimeReactProvider>
-    <App />
+    <Chat />
     </PrimeReactProvider>
   </StrictMode>,
 )

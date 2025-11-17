@@ -9,12 +9,18 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 
 import './index.css';
 import './flags.css';
-import Chat from './chat.tsx';
+// import Chat from './chat.tsx';
+
+// Add this at the top
+import { Buffer } from 'buffer';
+
+window.global = window;
+window.Buffer = Buffer;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <PrimeReactProvider>
-    <Chat />
+    <App />
     </PrimeReactProvider>
   </StrictMode>,
 )

@@ -1,11 +1,24 @@
-import React, { useEffect, useState ,} from "react";
-import { Message } from "primereact/message";
+import React, { useEffect, useRef, useState ,} from "react";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { InputTextarea } from 'primereact/inputtextarea';
 import type { SubmitSmResult } from "./model/SubmitSmResp";
+// import { useWebSocket } from "./useWebSocket";
 
+import SockJS from "sockjs-client";
+import { Client, over } from "stompjs";
+
+export interface Message {
+  id: string;
+  submitted: number;
+  delivered: number;
+  submitDate: number;
+  doneDate: number;
+  finalStatus: string;
+  error: string;
+  text: string;
+}
 
 async function submitSMAApi(msg: string) {
   const data = {
@@ -27,6 +40,28 @@ const Form: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [submmitSMResp, setSubmmitSMResp] = useState<SubmitSmResult | null>(null);
+  // const messages = useWebSocket("/ws", "/queue/messages");
+  const [messages, setMessages] = useState<Message[]>([]);
+
+
+  useEffect(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client: Client = over(socket);
+
+    client.connect({}, () => {
+      console.log("Connected to WebSocket");
+
+      client.subscribe("/queue/messages", (payload) => {
+        console.log("Received message:", payload.body);
+        const msg: Message = JSON.parse(payload.body);
+        setMessages((prev) => [...prev, msg]);
+      });
+    });
+
+    return () => {
+      console.log("WebSocket disconnected");
+    };
+  }, []);
 
   function submmitSM() {
     setLoading(true);
@@ -60,6 +95,17 @@ const Form: React.FC = () => {
         />
       </div>
       <Divider />
+          <div>
+      <h2>WebSocket Messages</h2>
+
+      {messages.length === 0 && <p>No messages yet...</p>}
+
+      <ul>
+        {messages.map((msg, i) => (
+          <li key={i}>{msg.finalStatus}</li>
+        ))}
+      </ul>
+    </div>
     </div>
   );
 };

@@ -54,44 +54,7 @@ public class SubmitSmController {
                             NumberingPlanIndicator.UNKNOWN, null,
                             InterfaceVersion.IF_34));
             log.info("Connected with SMSC with system id {}", systemId);
-
-            // 🔹 Set up a listener for delivery receipts and MO messages
-            session.setMessageReceiverListener(new MessageReceiverListener() {
-                @Override
-                public void onAcceptDeliverSm(DeliverSm deliverSm) throws ProcessRequestException {
-                    try {
-                        if (MessageType.SMSC_DEL_RECEIPT.containedIn(deliverSm.getEsmClass())) {
-                            // ✅ This is a Delivery Receipt
-                            DeliveryReceipt delRec = deliverSm.getShortMessageAsDeliveryReceipt();
-
-                            String messageId = delRec.getId();
-                            DeliveryReceiptState state = delRec.getFinalStatus();
-//                            String doneDate = delRec.getDoneDate();
-                            System.out.println("📩 Got delivery receipt for message_id=" + messageId
-                                    + " with status=" + state );
-                        } else {
-                            // This is a Mobile-Originated message (regular deliver_sm)
-                            String msg = new String(deliverSm.getShortMessage());
-                            System.out.println("📨 Received message: " + msg);
-                        }
-                    } catch (InvalidDeliveryReceiptException e) {
-                        log.error("Invalid delivery receipt encountered", e);
-                    }
-                }
-
-                @Override
-                public void onAcceptAlertNotification(AlertNotification alertNotification) {
-                    System.out.println("Got alert notification");
-                }
-
-                @Override
-                public DataSmResult onAcceptDataSm(DataSm dataSm, Session source)
-                        throws ProcessRequestException {
-                    System.out.println("Got data_sm");
-                    return null;
-                }
-            });
-
+            String msg= submitSM.getMessage();
             // 🔹 Submit an SMS with delivery receipt requested
             SubmitSmResult submitSmResult = session.submitShortMessage("CMT",
                     TypeOfNumber.INTERNATIONAL, NumberingPlanIndicator.ISDN, "15551234567",
@@ -102,14 +65,9 @@ public class SubmitSmController {
                     (byte) 0,
                     new GeneralDataCoding(),
                     (byte) 0,
-                    "Queue full test".getBytes());
-
+                    msg.getBytes());
             ObjectMapper objectMapper = new ObjectMapper();
-            jsonString = objectMapper.writeValueAsString(submitSmResult);
-            // Keep session open to receive DRs
-/*
-            Thread.sleep(60000);
-*/
+            return objectMapper.writeValueAsString(submitSmResult);
 
         } catch (ResponseTimeoutException | InvalidResponseException | NegativeResponseException | IOException |
                  PDUException e) {
@@ -117,7 +75,6 @@ public class SubmitSmController {
         } finally {
             session.unbindAndClose();
         }
-        return jsonString;
     }
 }
 

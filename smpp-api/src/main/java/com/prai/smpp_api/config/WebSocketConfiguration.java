@@ -30,7 +30,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/queue"); // Use /queue for clients to subscribe
+		config.enableSimpleBroker("/topic"); // Use /queue for clients to subscribe
 		config.setApplicationDestinationPrefixes("/app");
 	}
 }

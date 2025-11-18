@@ -43,8 +43,10 @@ public class MessageListenerController {
 
     @JmsListener(destination = QUEUE_NAME)
     public void receiveMessage(String message) {
+        log.info("📩 Forwarding message: {} to topic {}", message, "/topic/messages");
+
         // Forward to WebSocket subscribers
-        messagingTemplate.convertAndSend("/queue/messages", message);
+        messagingTemplate.convertAndSend("/topic/messages", message);
     }
 
     public void messageListener() {

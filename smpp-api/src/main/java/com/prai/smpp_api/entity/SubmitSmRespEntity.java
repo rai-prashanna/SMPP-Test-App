@@ -11,13 +11,13 @@ import jakarta.persistence.Column;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "submit_sm_result")
+@Table(name = "submit_sm_resp")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class SubmitSmResultEntity implements Serializable {
+public class SubmitSmRespEntity implements Serializable {
     @Id
     @EqualsAndHashCode.Include
     private String messageId;

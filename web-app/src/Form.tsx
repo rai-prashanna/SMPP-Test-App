@@ -2,9 +2,10 @@ import React, { useEffect, useState,useRef } from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
 import { InputTextarea } from 'primereact/inputtextarea';
-// import { useWebSocket } from "./useWebSocket";
 import SockJS from "sockjs-client";
 import { Client, over } from "stompjs";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 export interface Message {
   id: string;
@@ -98,16 +99,29 @@ useEffect(() => {
         />
       </div>
       <Divider />
-          <div>
-      <h2>WebSocket Messages</h2>
+    <div>
+      <h2>Delivery Receipt messages</h2>
 
       {messages.length === 0 && <p>No messages yet...</p>}
-
-      <ul>
+      
+      {messages.length !== 0 &&         
+      <div className="card">
+            <DataTable value={messages} showGridlines tableStyle={{ minWidth: '50rem' }}>
+                <Column field="id" header="Id"></Column>
+                <Column field="submitted" header="Submitted"></Column>
+                <Column field="delivered" header="Delivered"></Column>
+                <Column field="submitDate" header="SubmitDate"></Column>
+                <Column field="doneDate" header="DoneDate"></Column>
+                <Column field="finalStatus" header="FinalStatus"></Column>
+                <Column field="error" header="Error"></Column>
+                <Column field="text" header="Text"></Column>
+            </DataTable>
+        </div>}
+      {/* <ul>
         {messages.map((msg, i) => (
           <li key={i}>{msg.finalStatus}</li>
         ))}
-      </ul>
+      </ul> */}
     </div>
     </div>
   );

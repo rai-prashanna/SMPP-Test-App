@@ -1,0 +1,22 @@
+package com.prai.smpp_api.service;
+
+import jakarta.jms.Queue;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MessageProducer {
+
+    private final JmsTemplate jmsTemplate;
+    private final Queue queue;
+
+    public MessageProducer(JmsTemplate jmsTemplate, Queue queue) {
+        this.jmsTemplate = jmsTemplate;
+        this.queue = queue;
+    }
+
+    public void send(String message) {
+        jmsTemplate.convertAndSend(queue, message);
+        System.out.println("Sent message: " + message);
+    }
+}

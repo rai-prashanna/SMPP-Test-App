@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.p-datatable-thead > tr > th {
+  background-color: #6366f1
+}

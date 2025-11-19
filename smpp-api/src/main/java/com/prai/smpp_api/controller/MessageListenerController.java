@@ -3,6 +3,8 @@ package com.prai.smpp_api.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.prai.smpp_api.entity.DeliveryReceiptEntity;
+import com.prai.smpp_api.repository.DeliveryReceiptRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.jsmpp.bean.*;
@@ -30,6 +32,9 @@ public class MessageListenerController {
     private static final Logger log = LoggerFactory.getLogger(MessageListenerController.class);
 
     private final String QUEUE_NAME = "queue";
+
+    @Autowired
+    private DeliveryReceiptRepository deliveryReceiptRepository;
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -80,12 +85,11 @@ public class MessageListenerController {
                             DeliveryReceiptState state = delRec.getFinalStatus();
                             log.info("📩 Got delivery receipt for message_id={} with status={}", messageId, state);
                             ObjectMapper objectMapper = new ObjectMapper();
-//                            producer.send(objectMapper.writeValueAsString(delRec));
-
+                            log.info("📩 Saving delivery receipt for message_id={} with status={} to queue={} ", messageId, state,QUEUE_NAME);
                             jmsTemplate.convertAndSend(QUEUE_NAME, objectMapper.writeValueAsString(delRec));
-//                            rabbitTemplate.convertAndSend("spring-boot-exchange", "foo.bar.baz", "Hello from RabbitMQ!");
-//                            System.out.println("📩 Got delivery receipt for message_id=" + messageId
-//                                    + " with status=" + state );
+                            log.info("📩 Saved delivery receipt for message_id={} with status={} to queue={} ", messageId, state,QUEUE_NAME);
+                            DeliveryReceiptEntity entity=transformToEntity(delRec);
+                            deliveryReceiptRepository.save(entity);
                         } else {
                             // This is a Mobile-Originated message (regular deliver_sm)
                             String msg = new String(deliverSm.getShortMessage());
@@ -111,6 +115,11 @@ public class MessageListenerController {
             session.unbindAndClose();
             throw new RuntimeException(e);
         }
+    }
+
+    public DeliveryReceiptEntity transformToEntity(DeliveryReceipt delRec){
+        DeliveryReceiptEntity entity=new DeliveryReceiptEntity(delRec.getId(),delRec.getSubmitted(),delRec.getDelivered(),delRec.getSubmitDate(),delRec.getDoneDate(),delRec.getFinalStatus(),delRec.getError(),delRec.getText());
+        return  entity;
     }
 
 

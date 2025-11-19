@@ -21,7 +21,7 @@ If you manually switch to a different parent and actually want the inheritance, 
 
 
 
-docker run -d --name activemq -p 61616:61616 -p 8161:8161 -p 61613:61613 -e ARTEMIS_USERNAME=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis\n
+docker run -d --name activemq -p 61616:61616 -p 8161:8161 -p 61613:61613 -e ARTEMIS_USERNAME=admin -e ARTEMIS_PASSWORD=admin apache/activemq-artemis
 docker ps
 docker run -d --name activemq \\n  -p 61616:61616 \\n  -p 8161:8161 \\n  -p 61613:61613 \\n  -e AMQ_USER=admin \\n  -e AMQ_PASSWORD=admin \\n  apache/activemq-artemis\n
 
@@ -29,3 +29,9 @@ docker run --name my-db -e POSTGRES_PASSWORD=mysecretpassword -d postgres
 
 docker run -d --name my-postgres -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -e POSTGRES_DB=mydatabase -p 5432:5432 postgres:latest
 
+docker run -d --name activemq -p 61616:61616 -p 8161:8161 -p 61613:61613 apache/activemq-classic
+
+docker run -p 5050:80 \
+-e "PGADMIN_DEFAULT_EMAIL=prai@domain.com" \
+-e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+-d dpage/pgadmin4:9.10

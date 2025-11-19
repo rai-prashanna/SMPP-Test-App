@@ -67,8 +67,9 @@ public class SubmitSmController {
                     (byte) 0,
                     msg.getBytes());
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(submitSmResult);
-
+            String submitSmResultJson=objectMapper.writeValueAsString(submitSmResult);
+            log.info("SubmitSmResult = {}", submitSmResultJson);
+            return submitSmResultJson;
         } catch (ResponseTimeoutException | InvalidResponseException | NegativeResponseException | IOException |
                  PDUException e) {
             throw new RuntimeException(e);

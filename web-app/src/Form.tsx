@@ -1,11 +1,11 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { Divider } from "primereact/divider";
-import { InputTextarea } from 'primereact/inputtextarea';
+import { InputTextarea } from "primereact/inputtextarea";
 import SockJS from "sockjs-client";
 import { Client, over } from "stompjs";
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
 export interface Message {
   id: string;
@@ -43,51 +43,56 @@ const Form: React.FC = () => {
 
   const connectedRef = useRef(false);
 
-useEffect(() => {
-  if (connectedRef.current) return;  // prevents duplicate subscription in React StrictMode
-  connectedRef.current = true;
+  useEffect(() => {
+    if (connectedRef.current) return; // prevents duplicate subscription in React StrictMode
+    connectedRef.current = true;
 
-  const socket = new SockJS("http://localhost:8080/ws");
-  const client: Client = over(socket);
+    const socket = new SockJS("http://localhost:8080/ws");
+    const client: Client = over(socket);
 
-  client.connect({}, () => {
-    console.log("Connected to WebSocket");
+    client.connect({}, () => {
+      console.log("Connected to WebSocket");
 
-    client.subscribe("/topic/messages", (payload) => {
-      console.log("Received message:", payload.body);
-      const msg: Message = JSON.parse(payload.body);
-      setMessages((prev) => [...prev, msg]);
+      client.subscribe("/topic/messages", (payload) => {
+        const messages: Message[] = JSON.parse(payload.body);
+        console.log("Received messages:", messages);
+        setMessages((prev) => [...prev, ...messages]);
+      });
     });
-  });
 
-  return () => {
-    console.log("Disconnecting WebSocket...");
-    if (client?.connected) {
-      client.disconnect(() => console.log("Disconnected"));
-    }
-  };
-}, []);
+    return () => {
+      console.log("Disconnecting WebSocket...");
+      if (client?.connected) {
+        client.disconnect(() => console.log("Disconnected"));
+      }
+    };
+  }, []);
 
   function submmitSM() {
     setLoading(true);
-    submitSMAApi(message).then((submmitSMResp) => {
-      setLoading(false);
-      console.log("Submit successful:", JSON.stringify(submmitSMResp));
-    })    .catch((err) => {
-      console.error("Submit failed:", err);
-      setLoading(false); 
-    });;
-
+    submitSMAApi(message)
+      .then((submmitSMResp) => {
+        setLoading(false);
+        console.log("Submit successful:", JSON.stringify(submmitSMResp));
+      })
+      .catch((err) => {
+        console.error("Submit failed:", err);
+        setLoading(false);
+      });
   }
-
 
   return (
     <div>
       <div className="flex flex-wrap align-items-center mb-3">
-        <InputTextarea id="message"
+        <InputTextarea
+          id="message"
           name="message"
-          placeholder="Message" value={message} onChange={(e) => setMessage(e.target.value)} rows={5} cols={30} />
-
+          placeholder="Message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={5}
+          cols={30}
+        />
       </div>
 
       <div className="flex flex-wrap">
@@ -99,34 +104,37 @@ useEffect(() => {
         />
       </div>
       <Divider />
-    <div>
-      <h2>Delivery Receipt messages</h2>
+      <div>
+        <h2>Delivery Receipt messages</h2>
 
-      {messages.length === 0 && <p>No messages yet...</p>}
-      
-      {messages.length !== 0 &&         
-      <div className="card">
-            <DataTable value={messages} showGridlines tableStyle={{ minWidth: '50rem' }}>
-                <Column field="id" header="Id"></Column>
-                <Column field="submitted" header="Submitted"></Column>
-                <Column field="delivered" header="Delivered"></Column>
-                <Column field="submitDate" header="SubmitDate"></Column>
-                <Column field="doneDate" header="DoneDate"></Column>
-                <Column field="finalStatus" header="FinalStatus"></Column>
-                <Column field="error" header="Error"></Column>
-                <Column field="text" header="Text"></Column>
+        {messages.length === 0 && <p>No messages yet...</p>}
+
+        {messages.length !== 0 && (
+          <div className="card">
+            <DataTable
+              value={messages}
+              showGridlines
+              tableStyle={{ minWidth: "50rem" }}
+            >
+              <Column field="id" header="Id"></Column>
+              <Column field="submitted" header="Submitted"></Column>
+              <Column field="delivered" header="Delivered"></Column>
+              <Column field="submitDate" header="SubmitDate"></Column>
+              <Column field="doneDate" header="DoneDate"></Column>
+              <Column field="finalStatus" header="FinalStatus"></Column>
+              <Column field="error" header="Error"></Column>
+              <Column field="text" header="Text"></Column>
             </DataTable>
-        </div>}
-      {/* <ul>
+          </div>
+        )}
+        {/* <ul>
         {messages.map((msg, i) => (
           <li key={i}>{msg.finalStatus}</li>
         ))}
       </ul> */}
-    </div>
+      </div>
     </div>
   );
 };
 
 export default Form;
-
-

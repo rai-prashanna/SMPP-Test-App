@@ -7,6 +7,7 @@ import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.*;
 import org.hibernate.annotations.Type;
 import jakarta.persistence.Column;
+import org.jsmpp.bean.*;
 
 import java.io.Serializable;
 
@@ -25,6 +26,5 @@ public class SubmitSmRespEntity implements Serializable {
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
     private String optionalParameters;
-
 
 }

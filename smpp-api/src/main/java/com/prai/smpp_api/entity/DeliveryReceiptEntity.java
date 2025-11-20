@@ -14,17 +14,21 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DeliveryReceiptEntity {
     @Id
     @EqualsAndHashCode.Include
     public String id;
 
-    private Integer submitted;
-    private Integer delivered;
+    private int submitted;
+    private int delivered;
+
     private Date submitDate;
     private Date doneDate;
-    private DeliveryReceiptState finalStatus;
+    private int finalStatus;
     private String error;
     private String text;
+
+
 }

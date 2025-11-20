@@ -56,7 +56,7 @@ public class SubmitSmController {
             log.info("Connected with SMSC with system id {}", systemId);
             String msg= submitSM.getMessage();
             // 🔹 Submit an SMS with delivery receipt requested
-            SubmitSmResult submitSmResult = session.submitShortMessage("CMT",
+             var submitSmResult = session.submitShortMessage("CMT",
                     TypeOfNumber.INTERNATIONAL, NumberingPlanIndicator.ISDN, "15551234567",
                     TypeOfNumber.INTERNATIONAL, NumberingPlanIndicator.ISDN, "447700900007",
                     new ESMClass(0), (byte) 0, (byte) 0,
@@ -66,6 +66,7 @@ public class SubmitSmController {
                     new GeneralDataCoding(),
                     (byte) 0,
                     msg.getBytes());
+
             ObjectMapper objectMapper = new ObjectMapper();
             String submitSmResultJson=objectMapper.writeValueAsString(submitSmResult);
             log.info("SubmitSmResult = {}", submitSmResultJson);
@@ -79,3 +80,15 @@ public class SubmitSmController {
     }
 }
 
+
+
+//export interface Message {
+//    id: string;
+//    submitted: number;
+//    delivered: number;
+//    submitDate: number;
+//    doneDate: number;
+//    finalStatus: string;
+//    error: string;
+//    text: string;
+//}
